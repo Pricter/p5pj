@@ -2,9 +2,12 @@ import os
 import errno
 import urllib.request
 import fnmatch
+import glob
 
 commandList = ["newproject", "cls",
                "clear", "exit", "listprojects", "addproject"]
+
+fileCreated = False
 
 
 def find_all(name, path):
@@ -12,15 +15,6 @@ def find_all(name, path):
     for root, dirs, files in os.walk(path):
         if name in files:
             result.append(os.path.join(root, name))
-    return result
-
-
-def find_pattern(pattern, path):
-    result = []
-    for root, dirs, files in os.walk(path):
-        for name in files:
-            if fnmatch.fnmatch(name, pattern):
-                result.append(os.path.join(root, name))
     return result
 
 
@@ -105,7 +99,9 @@ def createProject(path, libs):
             return None
     makeHtmlFile(path, libs)
     makeSketchFile(path)
-    with open("projectList.txt", "w") as f:
+    global fileCreated
+    with open("projectList.txt", "a") as f:
+        fileCreated = True
         f.write(f"{path}\n")
     f.close()
 
@@ -150,11 +146,14 @@ def parse(comList):
             elif((len(args) == 2) and (args[1] == "-libs")):
                 createProject(args[0], True)
         elif(command == "listprojects"):
-            with open("projectList.txt", "w") as f:
-                pass
-            f.close()
+            if(fileCreated == False):
+                try:
+                    f = open("projectList.txt", "x")
+                except OSError as exc:
+                    if exc.errno == errno.EEXIST:
+                        pass
             with open("projectList.txt", "r") as f:
-                projects = f.read()
+                projects = f.readlines()
                 if(projects == ""):
                     print(
                         "\n\t[ PROJECTS ]:\tNo projects currently available, add a project \n\t\t\tfrom existing folder or create a project with boilerplate code.")
@@ -164,11 +163,30 @@ def parse(comList):
                     print(f"\t\t{projects}")
             f.close()
         elif(command == "addproject"):
-            if(len(find_all("index.html", args[0])) > 1):
+            indexHtmlFiles = []
+            jsFiles = []
+            for root, dirs, files in os.walk(args[0]):
+                for file in files:
+                    if file.endswith('.js'):
+                        jsFiles.append(file)
+                    if file == "index.html":
+                        indexHtmlFiles.append(file)
+            if(len(indexHtmlFiles) > 1):
                 print(
-                    "\n\t[ ERROR ]: Multiple `index.html` files present, Could not find starting point. A project must have only one `index.html` file.")
+                    "\n\t[ ERROR ]: Multiple `index.html` files. Please only include one `index.html`.")
                 return None
-            print(find_all("*.js", args[0]))
+            elif(len(jsFiles) < 1):
+                print(
+                    "\n\t[ ERROR ]: No js files were found. This does not look like a project directory.")
+                return None
+            try:
+                f = open("projectList.txt", "x")
+                f.close()
+            except OSError as exc:
+                if exc.errno == errno.EEXIST:
+                    pass
+            with open("projectList.txt", "a") as a:
+                a.write(args[0])
         elif(command == "clear" or "cls"):
             if(len(args) == 0):
                 os.system('cls' if os.name == 'nt' else 'clear')
