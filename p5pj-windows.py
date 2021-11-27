@@ -5,7 +5,7 @@ import fnmatch
 import glob
 
 commandList = ["newproject", "cls",
-               "clear", "exit", "listprojects", "addproject"]
+               "clear", "exit", "listprojects", "addproject", "help"]
 
 fileCreated = False
 
@@ -182,6 +182,22 @@ def parse(comList):
                     pass
             with open("projectList.txt", "a") as a:
                 a.write(args[0])
+        elif(command == "help"):
+            print("\nUsage: @> { COMMAND } < ARGUMENTS >\n")
+            print(
+                "\t[ COMMAND ] newProject: Creates a folder, and adds p5.js boilerplate code.")
+            print(
+                "\t\t[ ARGUMENTS ] { dirPath }: Path of the folder for the project to be created in. ( REQUIRED )")
+            print(
+                "\t\t[ ARGUMENTS ]-libs: Install the complete p5.js file in `path/libs/` folder. ( OPTIONAL )")
+            print("\t[ COMMAND ] listProjects: Lists all projects (In development)")
+            print(
+                "\t[ COMMAND ] addProject: Add an existing project to the project list.")
+            print(
+                "\t\t[ ARGUMENTS ] { dirPath}: Path of the folder to be added. ( REQUIRED )")
+            print("\t[ COMMAND ] (clear/cls): Clears the terminal prompt.")
+            print("\t[ COMMAND ] exit: Exit the prompt.")
+            print("\t[ COMMAND ] help: Print this")
         elif(command == "clear" or "cls"):
             if(len(args) == 0):
                 os.system('cls')
