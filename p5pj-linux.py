@@ -1,32 +1,11 @@
 import os
 import errno
 import urllib.request
-import fnmatch
-import glob
 
-commandList = ["newproject", "cls",
-               "clear", "exit", "listprojects", "addproject"]
+commandList = ["newproject", "cls", "clear",
+               "exit", "listprojects", "addproject"]
 
 fileCreated = False
-
-
-def find_all(name, path):
-    result = []
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            result.append(os.path.join(root, name))
-    return result
-
-
-def getArgs(text):
-    splitted = text.split()
-    command = splitted[0]
-    splitted.pop(0)
-    return [command, splitted]
-
-
-def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def getLibFile(libPath):
@@ -55,7 +34,7 @@ def getLibFile(libPath):
 
 
 def makeHtmlFile(path, libs):
-    with open(path + "\index.html", "w") as f:
+    with open(path + "/index.html", "w") as f:
         htmlTitle = input("\t[ PROMPT ] Enter your html page title: ")
         if(htmlTitle == ""):
             print(
@@ -75,7 +54,7 @@ def makeHtmlFile(path, libs):
 
 
 def makeSketchFile(path):
-    with open(path + "\sketch.js", "w") as f:
+    with open(path + "/sketch.js", "w") as f:
         f.write(
             "function setup() {\n\tcreateCanvas(400, 400);\n}\n\nfunction draw() {\n\tbackground(220);\n}")
     f.close()
@@ -107,26 +86,16 @@ def createProject(path, libs):
 
 
 def parse(comList):
-    if(comList[0] == ""):
-        print("[ ERROR ]: No argument provided, Quitting the program.")
-        exit()
     command = comList[0]
     command = command.lower()
     comList.pop(0)
     args = comList[0]
     comList.pop(0)
-    if(command == "exit"):
-        if(len(args) > 0):
-            print(
-                f"[ ERROR ]: Too many arguments for `{command}` command.\n")
-            return None
-        if(len(args) == 0):
-            exit()
     if(command in commandList):
         if(command == "newproject"):
             if(len(args) < 1):
                 print(
-                    f"[ ERROR ]: Not enough arguments for `{command}` command.\n")
+                    f"[ ERROR ]: Not enough arguments for `{command}` command.")
                 return None
             elif(len(args) > 2):
                 print(
@@ -143,8 +112,11 @@ def parse(comList):
                     print(
                         f'\t[ ERROR ]: `{installLibsInput}` Not understood choose only 1 or 2.')
                     return None
-            elif((len(args) == 2) and (args[1] == "-libs")):
-                createProject(args[0], True)
+            elif((len(args) == 2)):
+                if(args[1] == "-libs"):
+                    createProject(args[0], True)
+                elif(args[1] != "-libs"):
+                    print(f"[ ERROR ]: Unkown argument `{args[1]}`")
         elif(command == "listprojects"):
             if(fileCreated == False):
                 try:
@@ -189,15 +161,29 @@ def parse(comList):
                 a.write(args[0])
         elif(command == "clear" or "cls"):
             if(len(args) == 0):
-                os.system('cls' if os.name == 'nt' else 'clear')
+                os.system('clear')
             else:
                 print(
                     f"[ ERROR ]: Too many arguments for `{command}` command.\n")
                 return None
     elif(command not in commandList):
         print(
-            f"`{command}` Not understood only use valid commands, Type help to print all commands")
-        return None
+            f"`{command}` Not understood only use valid commands, Type help to print all commands.")
+
+
+def getArgs(text):
+    splitted = text.split()
+    if(len(splitted) == 0):
+        print("[ ERROR ]: No argument provided, Quitting the program.\n")
+        exit()
+    command = splitted[0]
+    if(command == "exit"):
+        if(len(splitted[1]) > 0):
+            print("[ ERROR ]: Too many arguments for `exit` command.\n")
+        else:
+            exit()
+    splitted.pop(0)
+    return [command, splitted]
 
 
 while True:
