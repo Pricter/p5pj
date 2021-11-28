@@ -79,6 +79,12 @@ def createProject(path, libs):
     makeHtmlFile(path, libs)
     makeSketchFile(path)
     global fileCreated
+    try:
+        f = open("projectList.txt", "x")
+        f.close()
+    except OSError as exc:
+        if exc.errno == errno.EEXIST:
+            pass
     with open("projectList.txt", "a") as f:
         fileCreated = True
         f.write(f"{path}\n")
@@ -118,6 +124,10 @@ def parse(comList):
                 elif(args[1] != "-libs"):
                     print(f"[ ERROR ]: Unkown argument `{args[1]}`")
         elif(command == "listprojects"):
+            if(len(args) > 0):
+                print(
+                    f"[ ERROR ]: Too many arguments for `{command}` command.\n")
+                return None
             if(fileCreated == False):
                 try:
                     f = open("projectList.txt", "x")
@@ -135,6 +145,20 @@ def parse(comList):
                     print(f"\t\t{projects}")
             f.close()
         elif(command == "addproject"):
+            if(len(args) < 1):
+                print(
+                    f"[ ERROR ]: Not enough arguments for `{command}` command.")
+                return None
+            elif(len(args) > 1):
+                print(
+                    f"[ ERROR ]: Too many arguments for `{command}` command.\n")
+                return None
+            try:
+                f = open("projectList.txt", "x")
+                f.close()
+            except OSError as exc:
+                if exc.errno == errno.EEXIST:
+                    pass
             indexHtmlFiles = []
             jsFiles = []
             for root, dirs, files in os.walk(args[0]):
@@ -194,7 +218,7 @@ def getArgs(text):
         exit()
     command = splitted[0]
     if(command == "exit"):
-        if(len(splitted[1]) > 0):
+        if(len(splitted) > 1):
             print("[ ERROR ]: Too many arguments for `exit` command.\n")
         else:
             exit()
