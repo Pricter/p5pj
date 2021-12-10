@@ -61,7 +61,7 @@ def makeHtmlFile(path, libs):
             libPath = os.path.join(path, "libs")
             os.mkdir(libPath)
             f.write(
-                f'<!DOCTYPE html>\n<html lang="en">\n\t<head>\n\t\t<title>{htmlTitle}</title>\n\t</head>\n\t<body>\n\t\t<script src="index.js"></script>\n\n\t\t<script src="./libs/p5.js"></script>\n\t</body>\n</html>')
+                f'<!DOCTYPE html>\n<html lang="en">\n\t<head>\n\t\t<title>{htmlTitle}</title>\n\t</head>\n\t<body>\n\t\t<script src="sketch.js"></script>\n\n\t\t<script src="./libs/p5.js"></script>\n\t</body>\n</html>')
             getLibFile(libPath)
     f.close()
 
@@ -69,7 +69,7 @@ def makeHtmlFile(path, libs):
 def makeSketchFile(path):
     with open(path + "\sketch.js", "w") as f:
         f.write(
-            "function setup() {\n\tcreateCanvas(400, 400);\n}\n\nfunction draw() {\n\tbackground(220);\n}")
+            "function setup() {\n\tcreateCanvas(400, 400);\n}\n\nfunction draw() {\n\tbackground(110);\n}")
     f.close()
 
 
