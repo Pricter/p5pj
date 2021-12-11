@@ -199,6 +199,9 @@ def parse(comList):
                 "\t[ COMMAND ] addProject: Add an existing project to the project list.")
             print(
                 "\t\t[ ARGUMENTS ] { dirPath}: Path of the folder to be added. ( REQUIRED )")
+            print(
+                "\t[ COMMAND ] Run: runs the specified project using `python -m http.server 800 --bind 127.0.0.1 --directory { folderPath }`")
+            print("\t\t[ ARGUMENTS ] { dirPath }: The directory to be runned.")
             print("\t[ COMMAND ] (clear/cls): Clears the terminal prompt.")
             print("\t[ COMMAND ] exit: Exit the prompt.")
             print("\t[ HELP ] help: Print this")
@@ -250,7 +253,7 @@ def parse(comList):
             isRunning = True
             try:
                 process = subprocess.Popen(
-                    ['python', '-m', 'http.server', '8000', '--bind', '127.0.0.1', '--directory', perm[index]])
+                    ['python3', '-m', 'http.server', '8000', '--bind', '127.0.0.1', '--directory', perm[index]])
             except:
                 print(
                     "[ ERROR ]: Could not create a process for live server. Might be a port or python issue.")
