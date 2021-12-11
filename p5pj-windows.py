@@ -190,15 +190,18 @@ def parse(comList):
             print(
                 "\t\t[ ARGUMENTS ] { dirPath }: Path of the folder for the project to be created in. ( REQUIRED )")
             print(
-                "\t\t[ ARGUMENTS ]-libs: Install the complete p5.js file in `path/libs/` folder. ( OPTIONAL )")
+                "\t\t[ ARGUMENTS ] -libs: Install the complete p5.js file in `path/libs/` folder. ( OPTIONAL )")
             print("\t[ COMMAND ] listProjects: Lists all projects (In development)")
             print(
                 "\t[ COMMAND ] addProject: Add an existing project to the project list.")
             print(
                 "\t\t[ ARGUMENTS ] { dirPath}: Path of the folder to be added. ( REQUIRED )")
+            print(
+                "\t[ COMMAND ] Run: runs the specified project using `python -m http.server 800 --bind 127.0.0.1 --directory { folderPath }`")
+            print("\t\t[ ARGUMENTS ] { dirPath }: The directory to be runned.")
             print("\t[ COMMAND ] (clear/cls): Clears the terminal prompt.")
             print("\t[ COMMAND ] exit: Exit the prompt.")
-            print("\t[ COMMAND ] help: Print this")
+            print("\t[ HELP ] help: Print this")
         elif(command == "run"):
             global isRunning
             if(isRunning):
