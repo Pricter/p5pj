@@ -1,13 +1,14 @@
 import os
 import errno
 import urllib.request
-import fnmatch
-import glob
+import subprocess
+import sys
 
-commandList = ["newproject", "cls",
-               "clear", "exit", "listprojects", "addproject", "help"]
+commandList = ["newproject", "cls", "clear",
+               "exit", "listprojects", "addproject", "run", "help"]
 
 fileCreated = False
+isRunning = False
 
 
 def getArgs(text):
@@ -198,6 +199,60 @@ def parse(comList):
             print("\t[ COMMAND ] (clear/cls): Clears the terminal prompt.")
             print("\t[ COMMAND ] exit: Exit the prompt.")
             print("\t[ COMMAND ] help: Print this")
+        elif(command == "run"):
+            global isRunning
+            if(isRunning):
+                print(
+                    "[ ERROR ]: Process already running or the port has been taken.")
+                return None
+            if(len(args) < 1):
+                print(
+                    f"[ ERROR ]: Not enough arguments for the `{command}` command.\n")
+                return None
+            elif(len(args) > 1):
+                print(
+                    f"[ ERROR ]: Too many arguments for the `{command}` command.\n")
+                return None
+            try:
+                f = open("projectList.txt", "x")
+            except OSError as exc:
+                if exc.errno == errno.EEXIST:
+                    pass
+            f = open("projectList.txt")
+            raw = f.read()
+            perm = f.read()
+            f.close()
+            if raw == "":
+                print(f"[ ERROR ]: No project named `{args[0]}`")
+                return None
+            projectList = []
+            splitted = raw.split("\n")
+            perm = raw.split("\n")
+            found = False
+            index = 0
+            for i in range(len(splitted)):
+                splitted[i] = splitted[i].split("\\")
+                projectList.append(splitted[i][-1])
+            for i in range(len(projectList)):
+                if(args[0] == projectList[i]):
+                    found = True
+                    index = i
+                    break
+            if found == False:
+                print(f"[ ERROR ]: No project named `{args[0]}`")
+                return None
+            path = os.path.join(perm[i], "index.html")
+            print(
+                f"\n[ INFO ]: Running the process http.server in file: {perm[index]}, There is currently no way to kill the process, to kill the process exit this script and the os will take care of the rest.")
+            isRunning = True
+            try:
+                process = subprocess.Popen(
+                    ['python', '-m', 'http.server', '8000', '--bind', '127.0.0.1', '--directory', perm[index]])
+            except:
+                print(
+                    "[ ERROR ]: Could not create a process for live server. Might be a port or python issue.")
+                isRunning = False
+                exit()
         elif(command == "clear" or "cls"):
             if(len(args) == 0):
                 os.system('cls')
@@ -211,5 +266,12 @@ def parse(comList):
         return None
 
 
-while True:
-    parse(getArgs(input("\n@> ")))
+if(len(sys.argv) > 1):
+    print("[ ERROR ]: Program arguments provided, this might cause issues, Exiting...")
+    exit()
+try:
+    while True:
+        parse(getArgs(input("\n@> ")))
+except KeyboardInterrupt:
+    print("KeyboardInterrupt, Exiting")
+    exit()
